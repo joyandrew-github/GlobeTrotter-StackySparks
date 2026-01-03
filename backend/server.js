@@ -10,9 +10,17 @@ app.use(express.json());
 dotenv.config();
 
 const authRoutes = require('./routes/authRoutes');
+const cityRoutes = require('./routes/cityRoutes');
+const tripRoutes = require('./routes/tripRoutes');
+const activityRoutes = require('./routes/activityRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/cities', cityRoutes);
+app.use('/api/trips', tripRoutes);
+app.use('/api/activities', activityRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 
 
