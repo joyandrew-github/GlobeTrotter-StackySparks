@@ -25,7 +25,6 @@ GlobeTrotter is a full-stack trip planning application that enables users to cre
 - **Database**: PostgreSQL with Prisma ORM
 
 ## Project Structure
-
 GlobeTrotter/
 ├── backend/        # Node.js + Express + Prisma
 ├── frontend/       # React + Tailwind CSS
@@ -84,7 +83,7 @@ npx prisma migrate dev
   npm i
   npm run dev
 ```
- - (App typically runs on http://localhost:3000) 
+ - (App typically runs on http://localhost:5173) 
 
 
 ## 👨‍💻 Developers
