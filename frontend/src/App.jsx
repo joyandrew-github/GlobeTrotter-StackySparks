@@ -9,6 +9,8 @@ import ItineraryBuilder from './pages/ItineraryBuilder';
 import ItineraryView from './pages/ItineraryView';
 import CitySearch from './pages/CitySearch';
 import BudgetBreakdown from './pages/BudgetBreakdown';
+import ProfilePage from './pages/ProfilePage';
+
 
 function App() {
   return (
@@ -22,8 +24,10 @@ function App() {
            <Route path="/trip/:id/itinerary" element={<ItineraryView />} />
           <Route path="/search/cities" element={<CitySearch />} />
           <Route path="/trip/:id/budget" element={<BudgetBreakdown />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
         <Route path='/auth' element={<AuthPage/>} />
+        
       </Routes>
     </Router>
   );

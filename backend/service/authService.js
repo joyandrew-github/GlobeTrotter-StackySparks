@@ -73,8 +73,9 @@ const login = async ({ email, password }) => {
   };
 };
 
-const updateProfile = async (userId, { country, city, phone, profileImageUrl }) => {
+const updateProfile = async (userId, { name,country, city, phone, profileImageUrl }) => {
   const data = {};
+  if (name !== undefined) data.name = name?.trim() || null;
   if (country !== undefined) data.country = country || null;
   if (city !== undefined) data.city = city || null;
   if (phone !== undefined) data.phone = phone || null;

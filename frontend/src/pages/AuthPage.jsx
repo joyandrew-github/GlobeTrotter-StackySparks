@@ -129,7 +129,7 @@ const AuthPage = () => {
   };
 
   const handleForgotPassword = () => {
-    alert('Forgot password feature coming soon! Check your email for reset instructions.');
+    window.location.href = '/forgot-password';
   };
 
   // Enhanced animation variants

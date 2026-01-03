@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, DollarSign, TrendingUp, Plus, Eye, Edit2, Trash2, Share2 } from 'lucide-react';
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:5000/api/trips';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -8,6 +11,9 @@ const Home = () => {
   const [sortBy, setSortBy] = useState('recent');
   const [filterCategory, setFilterCategory] = useState('all');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [recentTrips, setRecentTrips] = useState([]);
+  const [tripsLoading, setTripsLoading] = useState(false);
+  const [tripsError, setTripsError] = useState('');
 
   const carouselImages = [
     {
@@ -34,6 +40,54 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const fetchRecentTrips = async () => {
+      setTripsLoading(true);
+      setTripsError('');
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setRecentTrips([]);
+          setTripsLoading(false);
+          return;
+        }
+
+        const response = await axios.get(`${API_BASE_URL}/my`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success && Array.isArray(response.data.data)) {
+          const formatted = response.data.data
+            .slice()
+            .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+            .slice(0, 6)
+            .map((trip) => ({
+              id: trip.id,
+              name: trip.title,
+              image: trip.coverImage || 'https://via.placeholder.com/400x300?text=No+Image',
+              destinations: trip.stops?.length || 0,
+              duration: calculateDuration(trip.startDate, trip.endDate),
+              budget: trip.budget?.grandTotal || 0,
+              startDate: trip.startDate,
+              category: trip.category || 'general'
+            }));
+          setRecentTrips(formatted);
+        } else {
+          setRecentTrips([]);
+          setTripsError('Unable to load recent trips');
+        }
+      } catch (err) {
+        console.error('Error loading recent trips:', err);
+        setTripsError(err.response?.data?.message || 'Unable to load recent trips');
+      } finally {
+        setTripsLoading(false);
+      }
+    };
+
+    fetchRecentTrips();
+  }, []);
+
   const goToSlide = (index) => setCurrentSlide(index);
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
@@ -46,45 +100,20 @@ const Home = () => {
     { id: 5, name: 'Dubai, UAE', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400', tag: 'Luxury', region: 'Middle East' },
   ];
 
-  const previousTrips = [
-    { 
-      id: 1, 
-      name: 'European Adventure', 
-      image: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400',
-      destinations: 5,
-      duration: '14 days',
-      budget: 3500,
-      startDate: '2024-06-15',
-      category: 'cultural'
-    },
-    { 
-      id: 2, 
-      name: 'Asian Expedition', 
-      image: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=400',
-      destinations: 3,
-      duration: '10 days',
-      budget: 2200,
-      startDate: '2024-08-20',
-      category: 'adventure'
-    },
-    { 
-      id: 3, 
-      name: 'Beach Paradise', 
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400',
-      destinations: 2,
-      duration: '7 days',
-      budget: 1800,
-      startDate: '2024-12-10',
-      category: 'beach'
-    },
-  ];
+  const calculateDuration = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    if (Number.isNaN(startDate) || Number.isNaN(endDate)) return 'N/A';
+    const days = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1);
+    return `${days} day${days > 1 ? 's' : ''}`;
+  };
 
   const filteredRegions = regionalSelections.filter(region => 
     region.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     region.tag.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredTrips = previousTrips
+  const filteredTrips = recentTrips
     .filter(trip => {
       const matchesSearch = trip.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = filterCategory === 'all' || trip.category === filterCategory;
@@ -253,57 +282,78 @@ const Home = () => {
               View All →
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTrips.map((trip) => (
-              <div 
-                key={trip.id} 
-                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all"
-              >
-                <div className="relative h-48">
-                  <img 
-                    src={trip.image} 
-                    alt={trip.name} 
-                    className="w-full h-full object-cover"
-                  />
-                  <button className="absolute top-4 right-4 p-2 bg-white/95 rounded-lg shadow-lg hover:scale-110 transition-transform">
-                    <Share2 size={16} className="text-[#235789]" />
-                  </button>
-                </div>
-                <div className="p-5">
-                  <h4 className="text-xl font-bold text-[#235789] mb-4">
-                    {trip.name}
-                  </h4>
-                  <div className="space-y-2 mb-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} className="text-[#235789]" />
-                      <span>{trip.destinations} destinations</span>
+
+          {tripsLoading && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 text-center text-gray-600">
+              Loading your recent trips...
+            </div>
+          )}
+
+          {tripsError && !tripsLoading && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center text-red-700">
+              {tripsError}
+            </div>
+          )}
+
+          {!tripsLoading && !tripsError && filteredTrips.length === 0 && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 text-center text-gray-600">
+              No trips yet. Start planning your next adventure!
+            </div>
+          )}
+
+          {!tripsLoading && !tripsError && filteredTrips.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredTrips.map((trip) => (
+                <div 
+                  key={trip.id} 
+                  className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all"
+                >
+                  <div className="relative h-48">
+                    <img 
+                      src={trip.image} 
+                      alt={trip.name} 
+                      className="w-full h-full object-cover"
+                    />
+                    <button className="absolute top-4 right-4 p-2 bg-white/95 rounded-lg shadow-lg hover:scale-110 transition-transform">
+                      <Share2 size={16} className="text-[#235789]" />
+                    </button>
+                  </div>
+                  <div className="p-5">
+                    <h4 className="text-xl font-bold text-[#235789] mb-4">
+                      {trip.name}
+                    </h4>
+                    <div className="space-y-2 mb-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} className="text-[#235789]" />
+                        <span>{trip.destinations} destination{trip.destinations === 1 ? '' : 's'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} className="text-[#235789]" />
+                        <span>{trip.duration} • {new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <DollarSign size={16} className="text-[#235789]" />
+                        <span>Budget: ${trip.budget.toLocaleString()}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} className="text-[#235789]" />
-                      <span>{trip.duration} • {new Date(trip.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <DollarSign size={16} className="text-[#235789]" />
-                      <span>Budget: ${trip.budget.toLocaleString()}</span>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => navigate(`/trip/${trip.id}/itinerary`)}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-xl font-medium hover:bg-[#1a4060] transition-colors"
+                      >
+                        <Eye size={16} />
+                        View
+                      </button>
+                      <button onClick={() => navigate(`/trip/${trip.id}/build`)} className="p-2 bg-gray-100 text-[#235789] rounded-xl hover:bg-gray-200 transition-colors">
+                        <Edit2 size={16} />
+                      </button>
+                     
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => navigate(`/trip/${trip.id}/itinerary`)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-xl font-medium hover:bg-[#1a4060] transition-colors"
-                    >
-                      <Eye size={16} />
-                      View
-                    </button>
-                    <button onClick={() => navigate(`/trip/${trip.id}/build`)} className="p-2 bg-gray-100 text-[#235789] rounded-xl hover:bg-gray-200 transition-colors">
-                      <Edit2 size={16} />
-                    </button>
-                   
-                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Floating Action Button */}

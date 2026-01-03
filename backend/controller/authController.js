@@ -87,7 +87,7 @@ const login = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const userId = req.user.id;
-  const { country, city, phone } = req.body;
+  const { name,country, city, phone } = req.body;
 
   let profileImageUrl = null;
 
@@ -97,6 +97,7 @@ const updateProfile = async (req, res) => {
 
   try {
     const updatedUser = await authService.updateProfile(userId, {
+      name,
       country,
       city,
       phone,
@@ -146,15 +147,18 @@ const forgotPassword = async (req, res) => {
   }
 
   try {
-    const result = await authService.forgotPassword(email);
+    await authService.forgotPassword(email.trim().toLowerCase());
+
+    // Always return success (security best practice - don't reveal if email exists)
     res.status(200).json({
       success: true,
-      message: result.message
+      message: 'If your email is registered, you will receive an OTP shortly.'
     });
   } catch (error) {
+    // Even on error (e.g. user not found), return neutral message
     res.status(200).json({
-      success: false,
-      message: 'Email is Not found'
+      success: true,
+      message: 'If your email is registered, you will receive an OTP shortly.'
     });
   }
 };
@@ -170,15 +174,16 @@ const resetPassword = async (req, res) => {
   }
 
   try {
-    const result = await authService.verifyOtpAndResetPassword(email, otp, newPassword);
+    await authService.verifyOtpAndResetPassword(email.trim().toLowerCase(), otp, newPassword);
+
     res.status(200).json({
       success: true,
-      message: result.message
+      message: 'Password reset successfully'
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error.message
+      message: error.message || 'Invalid or expired OTP'
     });
   }
 };
