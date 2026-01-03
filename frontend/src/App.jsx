@@ -10,6 +10,7 @@ import ItineraryView from './pages/ItineraryView';
 import CitySearch from './pages/CitySearch';
 import BudgetBreakdown from './pages/BudgetBreakdown';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPassword from './pages/ForgotPassword';
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
         <Route path='/auth' element={<AuthPage/>} />
-        
+        <Route path='/forgot-password' element={<ForgotPassword />} />
       </Routes>
     </Router>
   );
