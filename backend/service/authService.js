@@ -11,21 +11,26 @@ const register = async ({ name, email, password, country, city, phone }) => {
     throw new Error('Name, email and password are required');
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  try {
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      profileImage: DEFAULT_PROFILE_IMAGE,
-      country: country || null,
-      city: city || null,
-      phone: phone || null
-    }
-  });
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        profileImage: DEFAULT_PROFILE_IMAGE,
+        country: country || null,
+        city: city || null,
+        phone: phone || null
+      }
+    });
 
-  return user;
+    return user;
+  } catch (error) {
+    console.error('Database error in register:', error);
+    throw error;
+  }
 };
 
 const login = async ({ email, password }) => {
