@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Clock, Plus, X, GripVertical, Edit2, Trash2, DollarSign, Save } from 'lucide-react';
-
+import { useNavigate, useParams } from 'react-router-dom';
 const ItineraryBuilder = () => {
+    const navigate = useNavigate();
+    const { id } = useParams();
   const [tripStops, setTripStops] = useState([
     {
       id: 1,
@@ -96,6 +98,13 @@ const ItineraryBuilder = () => {
   return (
     <div className="min-h-screen bg-[#FDFFFC] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
+
+        <button 
+            onClick={() => navigate(-1)}
+            className="text-[#235789] hover:underline flex items-center gap-2 mb-4"
+        >
+            ← Back
+        </button>
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-[#235789] mb-2">Build Your Itinerary</h1>
@@ -111,10 +120,15 @@ const ItineraryBuilder = () => {
             <Plus size={20} />
             Add Destination
           </button>
-          <button className="flex items-center gap-2 px-6 py-3 bg-white text-[#235789] border-2 border-[#235789] rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+          <button onClick={() => navigate(`/trip/${id}/itinerary`)} className="flex items-center gap-2 px-6 py-3 bg-white text-[#235789] border-2 border-[#235789] rounded-xl font-semibold hover:bg-gray-50 transition-colors">
             <Save size={20} />
             Save Itinerary
           </button>
+           {/* Go to Budget */}
+            <button onClick={() => navigate(`/trip/${id}/budget`)} className="flex items-center gap-2 px-6 py-3 bg-white text-[#235789] border-2 border-[#235789] rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+            <DollarSign size={20} />
+            Budget
+            </button>
         </div>
 
         {/* Itinerary Timeline */}

@@ -95,6 +95,12 @@ const MyTrips = () => {
   return (
     <div className="min-h-screen bg-[#FDFFFC] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        <button 
+    onClick={() => navigate(-1)}
+    className="text-[#235789] hover:underline flex items-center gap-2 mb-4"
+  >
+    ← Back
+  </button>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold text-[#235789] mb-2">
@@ -230,11 +236,11 @@ const MyTrips = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <button onClick={()  => navigate(`/trip/${trip.id}/build`)} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-lg hover:bg-[#1a4060] transition-colors font-medium">
+                      <button onClick={()  => navigate(`/trip/${trip.id}/itinerary`)} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-lg hover:bg-[#1a4060] transition-colors font-medium">
                         <Eye size={16} />
                         View
                       </button>
-                      <button className="px-3 py-2 bg-gray-100 text-[#235789] rounded-lg hover:bg-gray-200 transition-colors">
+                      <button onClick={()  => navigate(`/trip/${trip.id}/build`)} className="px-3 py-2 bg-gray-100 text-[#235789] rounded-lg hover:bg-gray-200 transition-colors">
                         <Edit2 size={16} />
                       </button>
                       <button
@@ -296,11 +302,11 @@ const MyTrips = () => {
                       </div>
 
                       <div className="flex gap-2">
-                        <button onClick={() => navigate(`/trip/${trip.id}/build`)} className="flex items-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-lg hover:bg-[#1a4060] transition-colors font-medium">
+                        <button onClick={() => navigate(`/trip/${trip.id}/itinerary`)} className="flex items-center gap-2 px-4 py-2 bg-[#235789] text-[#FDFFFC] rounded-lg hover:bg-[#1a4060] transition-colors font-medium">
                           <Eye size={16} />
                           View Details
                         </button>
-                        <button className="px-4 py-2 bg-gray-100 text-[#235789] rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                        <button onClick={()  => navigate(`/trip/${trip.id}/build`)} className="px-4 py-2 bg-gray-100 text-[#235789] rounded-lg hover:bg-gray-200 transition-colors font-medium">
                           <Edit2 size={16} className="inline mr-2" />
                           Edit
                         </button>

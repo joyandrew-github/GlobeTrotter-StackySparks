@@ -58,7 +58,7 @@ const AuthPage = () => {
         setSuccess('Login successful! Redirecting...');
 
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = '/';
         }, 1500);
       } else {
         // ==================== REGISTER ====================
