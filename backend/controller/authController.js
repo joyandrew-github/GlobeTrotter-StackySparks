@@ -4,6 +4,14 @@ const register = async (req, res) => {
   const { name, email, password, country, city, phone } = req.body;
 
   try {
+    // Validate input
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, and password are required'
+      });
+    }
+
     const user = await authService.register({
       name,
       email,
@@ -28,6 +36,8 @@ const register = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Registration error:', error);
+    
     if (error.code === 'P2002') {
       return res.status(400).json({
         success: false,
@@ -35,9 +45,18 @@ const register = async (req, res) => {
       });
     }
 
+    // Check if it's a database connection error
+    if (error.message?.includes('connect ECONNREFUSED') || error.message?.includes('database')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Please try again later.'
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: error.message || 'Registration failed'
+      message: error.message || 'Registration failed',
+      error: process.env.NODE_ENV === 'development' ? error.toString() : undefined
     });
   }
 };
@@ -57,6 +76,8 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
+    
     res.status(401).json({
       success: false,
       message: error.message || 'Login failed'
