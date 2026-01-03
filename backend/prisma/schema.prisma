@@ -1,0 +1,136 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================
+// USER
+// ==========================
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  profileImage String?
+  country      String?
+  city         String?
+  phone        String?
+  resetOtp         String?    
+  resetOtpExpires  DateTime?
+  createdAt    DateTime @default(now())
+
+  trips        Trip[]
+  savedCities  City[]   @relation("SavedCities")
+}
+
+// ==========================
+// CITY MASTER (SEARCH)
+// ==========================
+model City {
+  id           String   @id @default(uuid())
+  name         String
+  country      String
+  costIndex    Int      // 1-5 scale (higher = more expensive)
+  popularity   Int      // 0-100 popularity score
+  image        String?  // URL to city cover image
+  description  String?  // Short description
+  avgDailyCost Int?     // Average daily cost in USD
+  bestTime     String?  // e.g., "Apr-Jun, Sep-Oct"
+  highlights   String[] // Array of top attractions
+
+  stops        TripStop[]
+  savedBy      User[]   @relation("SavedCities")
+
+  @@unique([name, country]) // Prevent duplicates
+}
+
+// ==========================
+// TRIP
+// ==========================
+model Trip {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  coverImage  String?
+  startDate   DateTime
+  endDate     DateTime
+  isPublic    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stops       TripStop[]
+  expenses    Expense[]
+}
+
+// ==========================
+// TRIP STOPS (CITIES IN TRIP)
+// ==========================
+model TripStop {
+  id        String    @id @default(uuid())
+  order     Int
+  startDate DateTime
+  endDate   DateTime
+
+  tripId    String
+  trip      Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  cityId    String
+  city      City      @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  activities Activity[]
+}
+
+// ==========================
+// ACTIVITIES
+// ==========================
+model Activity {
+  id          String       @id @default(uuid())
+  name        String
+  type        ActivityType
+  cost        Float
+  durationHr  Int
+  day         Int
+  order       Int
+
+  tripStopId  String
+  tripStop    TripStop     @relation(fields: [tripStopId], references: [id], onDelete: Cascade)
+}
+
+// ==========================
+// EXPENSES
+// ==========================
+model Expense {
+  id        String          @id @default(uuid())
+  category  ExpenseCategory
+  amount    Float
+  note      String?
+  createdAt DateTime        @default(now())
+
+  tripId    String
+  trip      Trip            @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+// ==========================
+// ENUMS
+// ==========================
+enum ActivityType {
+  SIGHTSEEING
+  FOOD
+  ADVENTURE
+  SHOPPING
+  RELAXATION
+}
+
+enum ExpenseCategory {
+  TRANSPORT
+  STAY
+  FOOD
+  ACTIVITY
+  MISC
+}
