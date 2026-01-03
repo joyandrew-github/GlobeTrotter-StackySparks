@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, FileText, Save, X, Upload } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 const CreateTrip = () => {
   const [tripData, setTripData] = useState({
     name: '',
@@ -11,6 +11,7 @@ const CreateTrip = () => {
   });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -69,6 +70,8 @@ const CreateTrip = () => {
     if (validateForm()) {
       console.log('Trip created:', tripData);
       alert('Trip created successfully!');
+     
+      navigate(`/trip/1/build`);
       setTripData({
         name: '',
         startDate: '',
@@ -76,6 +79,7 @@ const CreateTrip = () => {
         description: '',
         coverPhoto: null
       });
+      
       setPreviewUrl(null);
     }
   };
@@ -95,6 +99,12 @@ const CreateTrip = () => {
   return (
     <div className="min-h-screen bg-[#FDFFFC] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        <button 
+    onClick={() => navigate(-1)}
+    className="text-[#235789] hover:underline flex items-center gap-2 mb-4"
+  >
+    ← Back
+  </button>
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-[#235789] mb-2">
             Create New Trip

@@ -40,6 +40,7 @@ const Navbar = () => {
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem 1.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
+          <a href='/'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
             <div
               style={{
@@ -58,7 +59,7 @@ const Navbar = () => {
               GlobeTrotter
             </h1>
           </div>
-
+           </a>
           {/* Desktop Menu - Profile Dropdown */}
           <div style={{ position: 'relative' }} className="desktop-menu" ref={dropdownRef}>
             <button
@@ -168,31 +169,7 @@ const Navbar = () => {
                     <span>Profile</span>
                   </button>
 
-                  <button
-                    onClick={handleMenuItemClick}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem 1rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.75rem',
-                      border: 'none',
-                      backgroundColor: 'transparent',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.2s',
-                      fontSize: '0.9rem',
-                      color: '#334155',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f1f5f9';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }}
-                  >
-                    <Calendar size={18} style={{ color: 'var(--secondary-color)' }} />
-                    <span>Trip Calendar</span>
-                  </button>
+                  
                 </div>
 
                 {/* Logout Section */}

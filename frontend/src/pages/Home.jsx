@@ -210,9 +210,9 @@ const Home = () => {
               <TrendingUp size={28} />
               <span>Top Regional Selections</span>
             </h3>
-            <button className="text-[#235789] font-semibold hover:underline">
-              View All →
-            </button>
+             <button onClick={() => navigate('/search/cities')}>
+                View All →
+              </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {filteredRegions.map((region) => (
@@ -295,12 +295,10 @@ const Home = () => {
                       <Eye size={16} />
                       View
                     </button>
-                    <button className="p-2 bg-gray-100 text-[#235789] rounded-xl hover:bg-gray-200 transition-colors">
+                    <button onClick={() => navigate(`/trip/${trip.id}/build`)} className="p-2 bg-gray-100 text-[#235789] rounded-xl hover:bg-gray-200 transition-colors">
                       <Edit2 size={16} />
                     </button>
-                    <button className="p-2 bg-gray-100 text-gray-600 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors">
-                      <Trash2 size={16} />
-                    </button>
+                   
                   </div>
                 </div>
               </div>
