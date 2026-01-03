@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, User, Calendar, LogOut, Menu, X,User2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, User, Calendar, LogOut, Menu, X, User2 } from 'lucide-react';
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -18,6 +21,18 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Fetch user data from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUserData(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
+      }
+    }
+  }, []);
+
   const toggleProfileDropdown = () => {
     setProfileDropdownOpen(!profileDropdownOpen);
   };
@@ -25,6 +40,23 @@ const Navbar = () => {
   const handleMenuItemClick = () => {
     setProfileDropdownOpen(false);
     setMobileMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Close menus
+    handleMenuItemClick();
+    
+    // Navigate to auth page
+    navigate('/auth');
+  };
+
+  const handleProfileClick = () => {
+    handleMenuItemClick();
+    navigate('/profile');
   };
 
   return (
@@ -132,10 +164,10 @@ const Navbar = () => {
                     </div>
                     <div>
                       <div style={{ fontWeight: '600', color: 'var(--secondary-color)', fontSize: '0.95rem' }}>
-                        Abishek S
+                        {userData?.name || 'User'}
                       </div>
                       <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                        abishek@example.com
+                        {userData?.email || 'email@example.com'}
                       </div>
                     </div>
                   </div>
@@ -144,7 +176,7 @@ const Navbar = () => {
                 {/* Menu Items */}
                 <div style={{ padding: '0.5rem 0' }}>
                   <button
-                    onClick={handleMenuItemClick}
+                    onClick={handleProfileClick}
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -180,7 +212,7 @@ const Navbar = () => {
                   }}
                 >
                   <button
-                    onClick={handleMenuItemClick}
+                    onClick={handleLogout}
                     style={{
                       width: '100%',
                       padding: '0.75rem 1rem',
@@ -265,14 +297,14 @@ const Navbar = () => {
                     fontSize: '1.25rem',
                   }}
                 >
-                  AS
+                  <User2 size={20}/>
                 </div>
                 <div>
                   <div style={{ fontWeight: '600', color: 'var(--secondary-color)', fontSize: '0.95rem' }}>
-                    Abishek S
+                    {userData?.name || 'User'}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    abishek@example.com
+                    {userData?.email || 'email@example.com'}
                   </div>
                 </div>
               </div>
@@ -281,7 +313,7 @@ const Navbar = () => {
             {/* Mobile Menu Items */}
             <div style={{ padding: '0.5rem 0' }}>
               <button
-                onClick={handleMenuItemClick}
+                onClick={handleProfileClick}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem',
@@ -329,7 +361,7 @@ const Navbar = () => {
               }}
             >
               <button
-                onClick={handleMenuItemClick}
+                onClick={handleLogout}
                 style={{
                   width: '100%',
                   padding: '0.75rem 1rem',
