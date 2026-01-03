@@ -31,14 +31,21 @@ model User {
 // CITY MASTER (SEARCH)
 // ==========================
 model City {
-  id         String   @id @default(uuid())
-  name       String
-  country    String
-  costIndex  Int
-  popularity Int
+  id           String   @id @default(uuid())
+  name         String
+  country      String
+  costIndex    Int      // 1-5 scale (higher = more expensive)
+  popularity   Int      // 0-100 popularity score
+  image        String?  // URL to city cover image
+  description  String?  // Short description
+  avgDailyCost Int?     // Average daily cost in USD
+  bestTime     String?  // e.g., "Apr-Jun, Sep-Oct"
+  highlights   String[] // Array of top attractions
 
-  stops      TripStop[]
-  savedBy    User[]   @relation("SavedCities")
+  stops        TripStop[]
+  savedBy      User[]   @relation("SavedCities")
+
+  @@unique([name, country]) // Prevent duplicates
 }
 
 // ==========================
